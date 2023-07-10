@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <cassert>
 
 // 获取编译器名称
 std::string getCompilerName()
@@ -38,12 +39,26 @@ std::string getCompileDateTime()
     return __DATE__ " " __TIME__;
 }
 
+int add(int a, int b) {
+    return a + b;
+}
+
+void test_add() {
+    // 测试用例1
+    assert(add(2, 3) == 5);
+
+    // 测试用例2
+    assert(add(4, 6) == 10);
+}
+
 int main()
 {
     // 输出编译工具信息
     std::cout << "Compiler: " << getCompilerName() << std::endl;
     std::cout << "Version: " << getCompilerVersion() << std::endl;
     std::cout << "Compile DateTime: " << getCompileDateTime() << std::endl;
+
+    assert(getCompilerName() == "GCC");
 
     return 0;
 }
