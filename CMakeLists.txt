@@ -11,7 +11,6 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 enable_testing()
 
 #添加项目搜索头文件的位置
-include_directories(.)
 include_directories(/root/thirdlib/include)
 link_directories(/root/thirdlib/lib)
 
