@@ -22,7 +22,7 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #设置编译库文件所需要的文件
 set(LIB_SRC
         foxzt/log.cpp
-        )
+        foxzt/util.cpp)
 
 #编译成库
 add_library(foxzt SHARED ${LIB_SRC})
@@ -41,3 +41,7 @@ add_test(NAME "Test_Boost" COMMAND test_boost)
 add_executable(test_yamlcpp tests/test_environment/test_yamlcpp.cpp)
 target_link_libraries(test_yamlcpp yaml-cpp)
 add_test(NAME "Test_YAMLCPP" COMMAND test_boost)
+
+add_executable(test_json tests/test_environment/test_json.cpp)
+target_link_libraries(test_json jsoncpp)
+add_test(NAME "Test_JSONCPP" COMMAND test_json)

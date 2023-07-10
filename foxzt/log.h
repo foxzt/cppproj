@@ -15,5 +15,6 @@
 #include <cstdarg>
 #include <list>
 #include "singleton.h"
+#include "util.h"
 
 #endif //CPPPROJ_LOG_H
