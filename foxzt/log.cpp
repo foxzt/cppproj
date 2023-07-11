@@ -3,3 +3,8 @@
 //
 
 #include "log.h"
+
+
+namespace foxzt {
+
+}

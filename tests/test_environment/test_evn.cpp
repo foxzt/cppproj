@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <mysql/mysql.h>
 
 // 获取编译器名称
 std::string getCompilerName()

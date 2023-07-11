@@ -11,8 +11,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 enable_testing()
 
 #添加项目搜索头文件的位置
-include_directories(/root/thirdlib/include)
-link_directories(/root/thirdlib/lib)
+include_directories(.)
 
 #设置可执行文件与库文件输出的位置
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -44,3 +43,10 @@ add_test(NAME "Test_YAMLCPP" COMMAND test_boost)
 add_executable(test_json tests/test_environment/test_json.cpp)
 target_link_libraries(test_json jsoncpp)
 add_test(NAME "Test_JSONCPP" COMMAND test_json)
+
+add_executable(mytest tests/test_environment/mytest.cpp)
+target_link_libraries(mytest)
+add_test(NAME "Test_MYTEST" COMMAND mytest)
+
+add_executable(test_spdlog tests/test_environment/test_spdlog.cpp)
+target_link_libraries(test_spdlog spdlog yaml-cpp)
