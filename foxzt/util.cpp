@@ -5,19 +5,16 @@
 #include "util.h"
 
 namespace foxzt {
-    pid_t GetThreadId() {
+    long GetThreadId() {
         return syscall(SYS_gettid);
     }
 
     uint32_t GetFiberId(){
         return 0;
     }
+    std::chrono::time_point<std::chrono::system_clock> getNowTime(){
+        return std::chrono::system_clock::now();
+    }
 
-    uint64_t GetCurrentMS(){
-        return 0;
-    }
-    uint64_t GetCurrentUS(){
-        return 0;
-    }
 }
 

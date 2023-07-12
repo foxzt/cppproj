@@ -23,19 +23,11 @@
 #include <google/protobuf/message.h>
 
 namespace foxzt {
-    pid_t GetThreadId();
+    long GetThreadId();
 
     uint32_t GetFiberId();
 
-    /**
-     * @brief 获取当前时间的毫秒
-     */
-    uint64_t GetCurrentMS();
-
-    /**
-     * @brief 获取当前时间的微秒
-     */
-    uint64_t GetCurrentUS();
+    std::chrono::time_point<std::chrono::system_clock> getNowTime();
 }
 
 #endif //CPPPROJ_UTIL_H

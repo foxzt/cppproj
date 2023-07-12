@@ -5,6 +5,7 @@
 #ifndef CPPPROJ_LOG_H
 #define CPPPROJ_LOG_H
 
+#include <memory>
 #include <string>
 #include <memory>
 #include <sstream>
@@ -22,46 +23,78 @@ namespace foxzt {
     enum class LogLevel {
         DEBUG,
         INFO,
-        WARNING,
+        WARN,
         ERROR,
         FATAL
     };
+
+    std::string logLevelToString(LogLevel level) {
+        switch (level) {
+            case LogLevel::DEBUG:
+                return "DEBUG";
+            case LogLevel::INFO:
+                return "INFO";
+            case LogLevel::WARN:
+                return "WARNING";
+            case LogLevel::ERROR:
+                return "ERROR";
+            case LogLevel::FATAL:
+                return "FATAL";
+            default:
+                return "UNKNOWN";
+        }
+    }
 
     class LogEvent {
     public:
         typedef std::shared_ptr<LogEvent> ptr;
 
-        LogEvent(LogLevel level, const char *file, int32_t line, uint32_t elapse,
-                 uint32_t thread_id, uint32_t fiber_id, uint64_t time,
-                 std::string thread_name)
-                : m_level(level),
-                  m_file(file),
-                  m_line(line),
-                  m_elapse(elapse),
-                  m_threadId(thread_id),
-                  m_fiberId(fiber_id),
-                  m_time(time),
-                  m_threadName(std::move(thread_name)) {}
+        LogEvent(LogLevel mLevel, const char *mFile, int32_t mLine, long mThreadId, uint32_t mFiberId,
+                 const std::chrono::time_point<std::chrono::system_clock> &mTime,
+                 std::string mLoggerName) : m_level(mLevel), m_file(mFile),
+                                            m_line(mLine),
+                                            m_threadId(mThreadId),
+                                            m_fiberId(mFiberId),
+                                            m_time(mTime),
+                                            m_loggerName(std::move(mLoggerName)) {}
 
-        const char *getFile() const { return m_file; }
+        LogLevel getMLevel() const {
+            return m_level;
+        }
 
-        int32_t getLine() const { return m_line; }
+        long getMThreadId() const {
+            return m_threadId;
+        }
 
-        uint32_t getElapse() const { return m_elapse; }
+        const std::chrono::time_point<std::chrono::system_clock> &getMTime() const {
+            return m_time;
+        }
 
-        uint32_t getThreadId() const { return m_threadId; }
+        const std::string &getMLoggerName() const {
+            return m_loggerName;
+        }
 
-        uint32_t getFiberId() const { return m_fiberId; }
+        const char *getMFile() const {
+            return m_file;
+        }
 
-        uint64_t getTime() const { return m_time; }
+        int32_t getMLine() const {
+            return m_line;
+        }
 
-        const std::string &getThreadName() const { return m_threadName; }
+        uint32_t getMFiberId() const {
+            return m_fiberId;
+        }
+
+        const std::string &getLoggerName() const {
+            return m_loggerName;
+        }
+
+        std::stringstream &getMSs() {
+            return m_ss;
+        }
 
         std::string getContent() const { return m_ss.str(); }
-
-        LogLevel getLevel() const { return m_level; }
-
-        std::stringstream &getSS() { return m_ss; }
 
         void format(const char *fmt, ...) {
             va_list args;
@@ -82,43 +115,167 @@ namespace foxzt {
         LogLevel m_level;
         const char *m_file;
         int32_t m_line;
-        uint32_t m_elapse;
-        uint32_t m_threadId;
+        long m_threadId;
         uint32_t m_fiberId;
-        uint64_t m_time;
-        std::string m_threadName;
+        std::chrono::time_point<std::chrono::system_clock> m_time;
+        std::string m_loggerName;
         std::stringstream m_ss;
     };
 
-    class Logger {
-        // Logger 类的定义
-    };
-
-    class LogEventWrap {
+    class LogFormatter {
     public:
-        explicit LogEventWrap(LogEvent::ptr e) : m_event(std::move(e)) {}
+        using ptr = std::shared_ptr<LogFormatter>;
 
-        ~LogEventWrap() = default;
+        explicit LogFormatter(std::string mPattern) : m_pattern(std::move(mPattern)) { init(); }
 
-        LogEvent::ptr getEvent() const { return m_event; }
+        void init();
 
-        std::stringstream& getSS() { return m_event->getSS(); }
+        std::string format(LogLevel level, const LogEvent::ptr &event);
+
+        std::ostream &format(std::ostream &ofs, LogLevel level, const LogEvent::ptr &event);
+
+    public:
+        class FormatItem {
+        public:
+            using ptr = std::shared_ptr<FormatItem>;
+
+            virtual ~FormatItem() = default;
+
+            virtual void format(std::ostream &os, LogLevel level, LogEvent::ptr event) = 0;
+        };
 
     private:
-        LogEvent::ptr m_event;
+        /// 日志格式
+        std::string m_pattern;
+        /// 日志格式解析后格式
+        std::vector<FormatItem::ptr> m_items;
     };
 
-    class LogFormatter{};
+    class LogAppender {
+    public:
+        using ptr = std::shared_ptr<LogAppender>;
 
-    class LogAppender{};
+        virtual ~LogAppender() = default;
 
-    class StdoutLogAppender : public LogAppender{};
+        virtual void log(LogLevel level, LogEvent::ptr event) = 0;
 
-    class FileLogAppender : public LogAppender{};
+        void setMLevel(LogLevel mLevel) {
+            m_level = mLevel;
+        }
 
-    class LoggerManager{};
+        void setMFormatter(LogFormatter::ptr mFormatter) {
+            m_formatter = std::move(mFormatter);
+        }
 
-    typedef foxzt::Singleton<LoggerManager> LoggerMgr;
+    protected:
+        /// 日志级别
+        LogLevel m_level = LogLevel::DEBUG;
+        /// 日志格式器
+        LogFormatter::ptr m_formatter;
+    };
+
+    class StdoutLogAppender : public LogAppender {
+    public:
+        using ptr = std::shared_ptr<StdoutLogAppender>;
+
+        void log(LogLevel level, LogEvent::ptr event) override;
+    };
+
+    class FileLogAppender : public LogAppender {
+    public:
+        using ptr = std::shared_ptr<FileLogAppender>;
+
+        explicit FileLogAppender(std::string mFilename) : m_filename(std::move(mFilename)) {
+            m_filestream.open(m_filename, std::ios::app | std::ios::out);
+        }
+
+        ~FileLogAppender() override {
+            m_filestream.close();
+        }
+
+        void log(LogLevel level, LogEvent::ptr event) override;
+
+    private:
+        /// 文件路径
+        std::string m_filename;
+        /// 文件流
+        std::ofstream m_filestream;
+    };
+
+    class Logger {
+    public:
+        using ptr = std::shared_ptr<Logger>;
+
+        explicit Logger(const std::string &name = "default") {
+
+            /**
+             * %Y：年份（四位数）。
+             * %m：月份。
+             * %d：日期。
+             * %H：小时（24小时制）。
+             * %M：分钟。
+             * %S：秒。
+             * %e：毫秒。
+             * %l：日志级别。
+             * %@：源代码文件名和行号。
+             * %v：实际的日志消息。
+             * %%：百分号
+             * 以后还能拓展，可以支持更多的格式……
+             */
+            ///输出示例：[2023-07-12 07:35:22.123][info](main.cpp:8): This is an info message.
+            ///默认日志名称是default，默认日志输出地是stdout，默认输出格式是[%Y-%m-%d %H:%M:%S.%e][%l](%@): %v，日志器的默认级别是DEBUG
+            m_level = LogLevel::DEBUG;
+            m_formatter.reset(new LogFormatter("[%Y-%m-%d %H:%M:%S.%e] [%l] [%@]: %v"));
+            m_appenders.push_back(std::make_shared<StdoutLogAppender>());
+            for (auto &i: m_appenders) {
+                i->setMFormatter(m_formatter);
+            }
+        }
+
+
+        void log(LogLevel level, const LogEvent::ptr &event);
+
+        void debug(const LogEvent::ptr &event);
+
+        void info(const LogEvent::ptr &event);
+
+        void warn(const LogEvent::ptr &event);
+
+        void error(const LogEvent::ptr &event);
+
+        void fatal(const LogEvent::ptr &event);
+
+        void addAppender(const LogAppender::ptr &appender);
+
+        void delAppender(const LogAppender::ptr &appender);
+
+        void clearAppenders();
+
+        const std::string &getMName() const {
+            return m_name;
+        }
+
+        LogLevel getMLevel() const {
+            return m_level;
+        }
+
+        void setMLevel(LogLevel mLevel) {
+            m_level = mLevel;
+        }
+
+        void setFormatter(const std::string &val);
+
+    private:
+        /// 日志名称
+        std::string m_name;
+        /// 日志级别
+        LogLevel m_level;
+        /// 日志目标集合
+        std::vector<LogAppender::ptr> m_appenders;
+        /// 日志格式器
+        LogFormatter::ptr m_formatter;
+    };
+
 }
 
 #endif //CPPPROJ_LOG_H
