@@ -39,6 +39,9 @@ namespace foxzt {
     void Logger::setFormatter(const std::string &val) {
         LogFormatter::ptr new_val(new LogFormatter(val));
         m_formatter = new_val;
+        for (auto &i: m_appenders) {
+            i->setMFormatter(m_formatter);
+        }
     }
 
     void Logger::clearAppenders() {
@@ -318,5 +321,6 @@ namespace foxzt {
                 m_items.push_back(std::shared_ptr<FormatItem>(new CharFormatItem(m_pattern[i]))); // Regular character
             }
         }
+        m_items.push_back(std::shared_ptr<FormatItem>(new NewLineFormatItem));
     }
 }
