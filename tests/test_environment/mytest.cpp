@@ -33,7 +33,7 @@ void test_log() {
             foxzt::GetFiberId(), foxzt::getNowTime(), logger->getMName());
     event->getMSs() << "test";
     logger->log(foxzt::LogLevel::DEBUG, event);
-    logger->setFormatter("[%@]");
+    logger->setFormatter("[%n]");
     logger->log(foxzt::LogLevel::DEBUG, event);
 }
 

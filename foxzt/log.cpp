@@ -308,6 +308,9 @@ namespace foxzt {
                         case 'v': // Log message placeholder
                             m_items.push_back(std::shared_ptr<FormatItem>(new MessageFormatItem));
                             break;
+                        case 'n': // Log message placeholder
+                            m_items.push_back(std::shared_ptr<FormatItem>(new LoggerNameFormatItem));
+                            break;
                         default:
                             m_items.push_back(std::shared_ptr<FormatItem>(new CharFormatItem(m_pattern[i])));
                             break;

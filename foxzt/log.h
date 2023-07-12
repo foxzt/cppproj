@@ -206,7 +206,7 @@ namespace foxzt {
     public:
         using ptr = std::shared_ptr<Logger>;
 
-        explicit Logger(const std::string &name = "default") {
+        explicit Logger(std::string name = "default") : m_name(std::move(name)) {
 
             /**
              * %Y：年份（四位数）。
