@@ -99,7 +99,7 @@ namespace foxzt {
         explicit LevelFormatItem(const std::string &str = "") {}
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
-            os << logLevelToString(level);
+            os << logLevelToString(event->getMLevel());
         }
     };
 
@@ -109,7 +109,7 @@ namespace foxzt {
         explicit LoggerNameFormatItem(const std::string &str = "") {}
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
-            os << event->getLoggerName();
+            os << event->getMLoggerName();
         }
     };
 
@@ -312,8 +312,11 @@ namespace foxzt {
                         case 'n': // Log message placeholder
                             m_items.push_back(std::shared_ptr<FormatItem>(new LoggerNameFormatItem));
                             break;
+                        case 't': // Log message placeholder
+                            m_items.push_back(std::shared_ptr<FormatItem>(new ThreadIdFormatItem));
+                            break;
                         default:
-                            m_items.push_back(std::shared_ptr<FormatItem>(new CharFormatItem(m_pattern[i])));
+                            m_items.push_back(std::shared_ptr<FormatItem>(new CharFormatItem(m_pattern[i + 1])));
                             break;
                     }
                     ++i; // Skip the next character since it has been processed

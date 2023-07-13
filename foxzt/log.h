@@ -136,21 +136,6 @@ namespace foxzt {
 
         std::string getContent() const { return m_ss.str(); }
 
-        void format(const char *fmt, ...) {
-            va_list args;
-            va_start(args, fmt);
-            format(fmt, args);
-            va_end(args);
-        }
-
-        void format(const char *fmt, va_list args) {
-            char buffer[1024];
-            int len = vsnprintf(buffer, sizeof(buffer), fmt, args);
-            if (len != -1 && len < sizeof(buffer)) {
-                m_ss << buffer;
-            }
-        }
-
     private:
         LogLevel m_level;
         const char *m_file;
@@ -263,7 +248,7 @@ namespace foxzt {
              * 以后还能拓展，可以支持更多的格式……
              */
             ///输出示例：[2023-07-12 07:35:22.123][info](main.cpp:8): This is an info message.
-            ///默认日志名称是default，默认日志输出地是stdout，默认输出格式是[%Y-%m-%d %H:%M:%S.%e][%l](%@): %v，日志器的默认级别是DEBUG
+            ///默认日志名称是default，默认日志输出地是stdout，默认输出格式是[%Y-%m-%d %H:%M:%S.%e] [%l] [%@]: %v，日志器的默认级别是DEBUG
             m_level = LogLevel::DEBUG;
             m_formatter.reset(new LogFormatter("[%Y-%m-%d %H:%M:%S.%e] [%l] [%@]: %v"));
             m_appenders.push_back(std::make_shared<StdoutLogAppender>());
