@@ -60,6 +60,7 @@ namespace foxzt {
 
     void Logger::addAppender(const LogAppender::ptr &appender) {
         m_appenders.push_back(appender);
+        m_appenders.back()->setMFormatter(m_formatter);
     }
 
     void Logger::log(LogLevel level, const LogEvent::ptr &event) {
@@ -325,5 +326,21 @@ namespace foxzt {
             }
         }
         m_items.push_back(std::shared_ptr<FormatItem>(new NewLineFormatItem));
+    }
+
+    LoggerManager::LoggerManager() {
+        m_default.reset(new Logger);
+        m_loggers[m_default->getMName()] = m_default;
+    }
+
+    Logger::ptr LoggerManager::getLogger(const std::string &name) {
+        auto it = m_loggers.find(name);
+        if (it != m_loggers.end()) {
+            return it->second;
+        }
+
+        Logger::ptr logger(new Logger(name));
+        m_loggers[name] = logger;
+        return logger;
     }
 }

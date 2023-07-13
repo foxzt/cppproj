@@ -50,3 +50,6 @@ add_test(NAME "Test_MYTEST" COMMAND mytest)
 
 add_executable(test_spdlog tests/test_environment/test_spdlog.cpp)
 target_link_libraries(test_spdlog spdlog yaml-cpp)
+
+add_executable(test_fmt tests/test_environment/test_fmt.cpp)
+target_link_libraries(test_fmt fmt)

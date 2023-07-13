@@ -27,18 +27,30 @@ void test_getNowTime() {
 }
 
 void test_log() {
+    //创建一个日志器，日志器默认输出到控制台
     foxzt::Logger::ptr logger = std::make_shared<foxzt::Logger>();
+    //创建一个日志事件
     auto event = std::make_shared<foxzt::LogEvent>(
             foxzt::LogLevel::DEBUG, __FILE__, __LINE__, foxzt::GetThreadId(),
             foxzt::GetFiberId(), foxzt::getNowTime(), logger->getMName());
+    //写入日志消息
     event->getMSs() << "test";
+
+    foxzt::LogAppender::ptr file_appender(new foxzt::FileLogAppender("./log.txt"));
+    file_appender->setMLevel(foxzt::LogLevel::WARN);
+    logger->addAppender(file_appender);
     logger->log(foxzt::LogLevel::DEBUG, event);
-    logger->setFormatter("[%n]");
+
+    //logger->setFormatter("[%n]");
     logger->log(foxzt::LogLevel::DEBUG, event);
+    logger->warn(event);
 }
 
 int main() {
     test_getNowTime();
     test_log();
+
+//    FOXZT_LOG_LEVEL(foxzt::LogLevel::DEBUG, "asd%d", 1);
+//    FOXZT_LOG_LEVEL(foxzt::LogLevel::DEBUG, "asd");
     return 0;
 }

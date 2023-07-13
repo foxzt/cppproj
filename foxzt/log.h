@@ -19,6 +19,16 @@
 #include "singleton.h"
 #include "util.h"
 
+/**
+ * @brief 获取默认日志器
+ */
+#define DEFAULT_LOGGER_RAW() foxzt::LoggerMgr::GetInstance()->getDeafault()
+
+/**
+ * @brief 获取name的日志器
+ */
+#define DEFAULT_LOGGER_NAME_RAW() foxzt::LoggerMgr::GetInstance()->getLogger()
+
 namespace foxzt {
     enum class LogLevel {
         DEBUG,
@@ -276,6 +286,22 @@ namespace foxzt {
         LogFormatter::ptr m_formatter;
     };
 
+    class LoggerManager {
+    public:
+        LoggerManager();
+
+        Logger::ptr getLogger(const std::string& name);
+
+        Logger::ptr getDefault() const { return m_default;}
+
+    private:
+        /// 日志器容器
+        std::map<std::string, Logger::ptr> m_loggers;
+        /// 主日志器
+        Logger::ptr m_default;
+    };
+
+    typedef Singleton<LoggerManager> LoggerMgr;
 }
 
 #endif //CPPPROJ_LOG_H
