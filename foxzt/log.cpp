@@ -315,6 +315,15 @@ namespace foxzt {
                         case 't': // 线程号
                             m_items.push_back(std::shared_ptr<FormatItem>(new ThreadIdFormatItem));
                             break;
+                        case 'F': // 协程号
+                            m_items.push_back(std::shared_ptr<FormatItem>(new FiberIdFormatItem));
+                            break;
+                        case 'g': // 文件名（带路径）
+                            m_items.push_back(std::shared_ptr<FormatItem>(new FilenameFormatItem));
+                            break;
+                        case '#': // 文件名（带路径）
+                            m_items.push_back(std::shared_ptr<FormatItem>(new LineFormatItem));
+                            break;
                         default:
                             m_items.push_back(std::shared_ptr<FormatItem>(new CharFormatItem(m_pattern[i + 1])));
                             break;

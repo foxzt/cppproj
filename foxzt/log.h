@@ -28,7 +28,7 @@
 /**
  * @brief 获取name的日志器
  */
-#define DEFAULT_LOGGER_NAME_RAW() foxzt::LoggerMgr::GetInstance()->getLogger()
+#define LOGGER_NAME_RAW(name) foxzt::LoggerMgr::GetInstance()->getLogger(name)
 
 #define FOXZT_LOGGER_CALL(logger, level, fmts, ...) \
 do { \
