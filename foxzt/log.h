@@ -16,18 +16,48 @@
 #include <cstdint>
 #include <cstdarg>
 #include <list>
+#include <fmt/format.h>
 #include "singleton.h"
 #include "util.h"
 
 /**
  * @brief 获取默认日志器
  */
-#define DEFAULT_LOGGER_RAW() foxzt::LoggerMgr::GetInstance()->getDeafault()
+#define DEFAULT_LOGGER_RAW() foxzt::LoggerMgr::GetInstance()->getDefault()
 
 /**
  * @brief 获取name的日志器
  */
 #define DEFAULT_LOGGER_NAME_RAW() foxzt::LoggerMgr::GetInstance()->getLogger()
+
+#define FOXZT_LOGGER_CALL(logger, level, fmts, ...) \
+do { \
+    auto event = std::make_shared<foxzt::LogEvent>( \
+        level, __FILE__, __LINE__, foxzt::GetThreadId(), \
+        foxzt::GetFiberId(), foxzt::getNowTime(), (logger)->getMName()); \
+    event->getMSs() << fmt::format(fmts, ##__VA_ARGS__); \
+    (logger)->log(level, event); \
+} while(0)
+
+#define FOXZT_LOGGER_DEBUG(logger, ...) FOXZT_LOGGER_CALL(logger, foxzt::LogLevel::DEBUG, __VA_ARGS__)
+
+#define FOXZT_DEBUG(...) FOXZT_LOGGER_DEBUG(DEFAULT_LOGGER_RAW(), __VA_ARGS__)
+
+#define FOXZT_LOGGER_INFO(logger, ...) FOXZT_LOGGER_CALL(logger, foxzt::LogLevel::INFO, __VA_ARGS__)
+
+#define FOXZT_INFO(...) FOXZT_LOGGER_INFO(DEFAULT_LOGGER_RAW(), __VA_ARGS__)
+
+#define FOXZT_LOGGER_WARN(logger, ...) FOXZT_LOGGER_CALL(logger, foxzt::LogLevel::WARN, __VA_ARGS__)
+
+#define FOXZT_WARN(...) FOXZT_LOGGER_WARN(DEFAULT_LOGGER_RAW(), __VA_ARGS__)
+
+#define FOXZT_LOGGER_ERROR(logger, ...) FOXZT_LOGGER_CALL(logger, foxzt::LogLevel::ERROR, __VA_ARGS__)
+
+#define FOXZT_ERROR(...) FOXZT_LOGGER_ERROR(DEFAULT_LOGGER_RAW(), __VA_ARGS__)
+
+#define FOXZT_LOGGER_FATAL(logger, ...) FOXZT_LOGGER_CALL(logger, foxzt::LogLevel::FATAL, __VA_ARGS__)
+
+#define FOXZT_FATAL(...) FOXZT_LOGGER_FATAL(DEFAULT_LOGGER_RAW(), __VA_ARGS__)
 
 namespace foxzt {
     enum class LogLevel {
@@ -290,9 +320,9 @@ namespace foxzt {
     public:
         LoggerManager();
 
-        Logger::ptr getLogger(const std::string& name);
+        Logger::ptr getLogger(const std::string &name);
 
-        Logger::ptr getDefault() const { return m_default;}
+        Logger::ptr getDefault() const { return m_default; }
 
     private:
         /// 日志器容器
