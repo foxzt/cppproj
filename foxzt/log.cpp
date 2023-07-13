@@ -279,40 +279,40 @@ namespace foxzt {
             if (m_pattern[i] == '%') {
                 if (i + 1 < m_pattern.length()) {
                     switch (m_pattern[i + 1]) {
-                        case 'Y': // Year (e.g., 2023)
+                        case 'Y': // 年
                             m_items.push_back(std::shared_ptr<FormatItem>(new YearFormatItem));
                             break;
-                        case 'm': // Month (01-12)
+                        case 'm': // 月
                             m_items.push_back(std::shared_ptr<FormatItem>(new MonthFormatItem));
                             break;
-                        case 'd': // Day of the month (01-31)
+                        case 'd': // 日
                             m_items.push_back(std::shared_ptr<FormatItem>(new DayFormatItem));
                             break;
-                        case 'H': // Hour (00-23)
+                        case 'H': // 小时（24小时制）
                             m_items.push_back(std::shared_ptr<FormatItem>(new HourFormatItem));
                             break;
-                        case 'M': // Minute (00-59)
+                        case 'M': // 分钟
                             m_items.push_back(std::shared_ptr<FormatItem>(new MinuteFormatItem));
                             break;
-                        case 'S': // Second (00-59)
+                        case 'S': // 秒
                             m_items.push_back(std::shared_ptr<FormatItem>(new SecondFormatItem));
                             break;
-                        case 'e': // Milliseconds (000-999)
+                        case 'e': // 毫秒
                             m_items.push_back(std::shared_ptr<FormatItem>(new MillisecondsFormatItem));
                             break;
-                        case 'l': // Log level placeholder
+                        case 'l': // 日志事件等级
                             m_items.push_back(std::shared_ptr<FormatItem>(new LevelFormatItem));
                             break;
-                        case '@': // Placeholder for additional information
+                        case '@': // 文件名：行号
                             m_items.push_back(std::shared_ptr<FormatItem>(new FilenameAndLineFormatItem));
                             break;
-                        case 'v': // Log message placeholder
+                        case 'v': // 日志消息
                             m_items.push_back(std::shared_ptr<FormatItem>(new MessageFormatItem));
                             break;
-                        case 'n': // Log message placeholder
+                        case 'n': // 日志器名称
                             m_items.push_back(std::shared_ptr<FormatItem>(new LoggerNameFormatItem));
                             break;
-                        case 't': // Log message placeholder
+                        case 't': // 线程号
                             m_items.push_back(std::shared_ptr<FormatItem>(new ThreadIdFormatItem));
                             break;
                         default:

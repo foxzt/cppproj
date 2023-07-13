@@ -15,7 +15,7 @@ int main() {
     auto file = std::shared_ptr<foxzt::LogAppender>(new foxzt::FileLogAppender("./log.txt"));
 
     DEFAULT_LOGGER_RAW()->addAppender(file);
-    DEFAULT_LOGGER_RAW()->setFormatter("[%Y-%m-%d %H:%M:%S.%e] [%l] [thread %]] [%@]: %v");
+    DEFAULT_LOGGER_RAW()->setFormatter("[%Y-%m-%d %H:%M:%S.%e] [%l] [thread %] [%@]: %v");
     FOXZT_LOGGER_CALL(DEFAULT_LOGGER_RAW(), foxzt::LogLevel::WARN, "as{}d%d", 12);
     FOXZT_LOGGER_CALL(DEFAULT_LOGGER_RAW(), foxzt::LogLevel::WARN, "hello");
 
