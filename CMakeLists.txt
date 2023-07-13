@@ -7,9 +7,6 @@ project(cppproj)
 #设置 CMake 构建过程中生成详细输出
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-#启动测试
-enable_testing()
-
 #添加项目搜索头文件的位置
 include_directories(.)
 
@@ -20,36 +17,40 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #设置编译库文件所需要的文件
 set(LIB_SRC
         foxzt/log.cpp
-        foxzt/util.cpp)
+        foxzt/util.cpp foxzt/config.cpp)
+
+#设置需要链接的库
+set(LIB
+        fmt
+        yaml-cpp
+        jsoncpp
+        foxzt
+        spdlog
+        )
 
 #编译成库
-add_library(foxzt SHARED ${LIB_SRC})
+add_library(foxzt STATIC ${LIB_SRC})
 
-link_libraries(foxzt)
+link_libraries(${LIB})
 
 #添加测试环境代码可执行文件
 add_executable(test_evn tests/test_environment/test_evn.cpp)
-target_link_libraries(test_evn)
-add_test(NAME "Test_Evn" COMMAND test_evn)
 
 add_executable(test_boost tests/test_environment/test_boost.cpp)
-target_link_libraries(test_boost)
-add_test(NAME "Test_Boost" COMMAND test_boost)
 
 add_executable(test_yamlcpp tests/test_environment/test_yamlcpp.cpp)
-target_link_libraries(test_yamlcpp yaml-cpp)
-add_test(NAME "Test_YAMLCPP" COMMAND test_boost)
 
 add_executable(test_json tests/test_environment/test_json.cpp)
-target_link_libraries(test_json jsoncpp)
-add_test(NAME "Test_JSONCPP" COMMAND test_json)
 
 add_executable(mytest tests/test_environment/mytest.cpp)
-target_link_libraries(mytest)
-add_test(NAME "Test_MYTEST" COMMAND mytest)
 
 add_executable(test_spdlog tests/test_environment/test_spdlog.cpp)
-target_link_libraries(test_spdlog spdlog yaml-cpp)
 
 add_executable(test_fmt tests/test_environment/test_fmt.cpp)
-target_link_libraries(test_fmt fmt)
+
+add_executable(test_config tests/test_environment/test_config.cpp)
+
+install(TARGETS foxzt LIBRARY DESTINATION /thirdlib/lib)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/foxzt
+        DESTINATION /thirdlib/include
+        FILES_MATCHING PATTERN "*.h")

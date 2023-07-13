@@ -5,6 +5,8 @@
 #ifndef CPPPROJ_SINGLETON_H
 #define CPPPROJ_SINGLETON_H
 
+#include <memory>
+
 namespace foxzt {
     template<class T, class X = void, int N = 0>
     class Singleton {

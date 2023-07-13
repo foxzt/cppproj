@@ -8,5 +8,6 @@
 #include "singleton.h"
 #include "util.h"
 #include "log.h"
+#include "config.h"
 
 #endif //CPPPROJ_FOXZT_H

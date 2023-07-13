@@ -16,7 +16,7 @@
 #include <cstdint>
 #include <cstdarg>
 #include <list>
-#include <fmt/format.h>
+#include <fmt/core.h>
 #include "singleton.h"
 #include "util.h"
 
@@ -68,22 +68,8 @@ namespace foxzt {
         FATAL
     };
 
-    std::string logLevelToString(LogLevel level) {
-        switch (level) {
-            case LogLevel::DEBUG:
-                return "DEBUG";
-            case LogLevel::INFO:
-                return "INFO";
-            case LogLevel::WARN:
-                return "WARNING";
-            case LogLevel::ERROR:
-                return "ERROR";
-            case LogLevel::FATAL:
-                return "FATAL";
-            default:
-                return "UNKNOWN";
-        }
-    }
+    std::string logLevelToString(LogLevel level);
+
 
     class LogEvent {
     public:

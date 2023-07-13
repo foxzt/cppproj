@@ -8,6 +8,22 @@
 
 
 namespace foxzt {
+    std::string logLevelToString(LogLevel level) {
+        switch (level) {
+            case LogLevel::DEBUG:
+                return "DEBUG";
+            case LogLevel::INFO:
+                return "INFO";
+            case LogLevel::WARN:
+                return "WARNING";
+            case LogLevel::ERROR:
+                return "ERROR";
+            case LogLevel::FATAL:
+                return "FATAL";
+            default:
+                return "UNKNOWN";
+        }
+    }
 
     std::string LogFormatter::format(LogLevel level, const LogEvent::ptr &event) {
         std::stringstream ss;

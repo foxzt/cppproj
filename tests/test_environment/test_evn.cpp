@@ -4,8 +4,7 @@
 
 #include <iostream>
 #include <cassert>
-#include <mysql/mysql.h>
-
+#include "foxzt/foxzt.h"
 // 获取编译器名称
 std::string getCompilerName()
 {
@@ -60,6 +59,8 @@ int main()
     std::cout << "Compile DateTime: " << getCompileDateTime() << std::endl;
 
     assert(getCompilerName() == "GCC");
+
+    FOXZT_INFO("hello");
 
     return 0;
 }
