@@ -1,42 +1,30 @@
-//
-// Created by fox on 2023/7/10.
-//
+#include <iostream>
+#include <fstream>
 #include <yaml-cpp/yaml.h>
+#include <map>
 #include "foxzt/log.h"
+#include "foxzt/config.h"
 
-void printYamlNode(const YAML::Node &node, int level = 0) {
-    // 打印节点的键和值
-    if (!node.IsNull()) {
-        for (int i = 0; i < level; ++i) {
-            std::cout << "  ";  // 缩进
+// NOLINT(cppcoreguidelines-recursion)
+void printYamlNodeType(const YAML::Node &node, int level = 0) {
+    if (node.IsNull()) return;
+    if (node.IsScalar()) {
+        std::cout << node.as<std::string>() << std::endl;
+    } else if (node.IsSequence()) {
+        for (const auto &element: node) {
+            printYamlNodeType(element, level + 1);
         }
-
-        if (node.IsScalar()) {
-            std::cout << "- " << node.Scalar() << std::endl;
-        } else if (node.IsSequence()) {
-            std::cout << "- [Sequence]" << std::endl;
-            for (const auto &element: node) {
-                printYamlNode(element, level + 1);
-            }
-        } else if (node.IsMap()) {
-            std::cout << "- {Map}" << std::endl;
-            for (const auto &pair: node) {
-                const auto &key = pair.first;
-                const auto &value = pair.second;
-                for (int i = 0; i < level + 1; ++i) {
-                    std::cout << "  ";  // 缩进
-                }
-                std::cout << key << ":";
-                printYamlNode(value, level + 1);
-            }
+    } else if (node.IsMap()) {
+        for (const auto &kv: node) {
+            std::cout << kv.first.as<std::string>() << ".";
+            printYamlNodeType(kv.second);
         }
     }
 }
 
+
+
 int main() {
 
-    YAML::Node root = YAML::LoadFile("log.yml");
-    printYamlNode(root);
-    FOXZT_INFO("hello {}","world !");
     return 0;
 }
