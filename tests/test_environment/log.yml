@@ -1,16 +1,16 @@
 logs:
-  - name: root
+  - name: "root"
     level: info
     appenders:
       - type: FileLogAppender
         file: root.txt
       - type: StdoutLogAppender
-  - name: system
+  - name: "system"
     level: info
     appenders:
       - type: FileLogAppender
         file: system.txt
       - type: StdoutLogAppender
 system:
-  port: 8080
-  pattern: "%d"
+  port: 808080
+  pattern: "[%Y-%m-%d %H:%M:%S.%e] [%l] [%@]: %v"

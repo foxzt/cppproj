@@ -55,7 +55,51 @@ namespace foxzt {
         std::string m_description;
     };
 
+    template<class F, class T>
+    class LexicalCast {
+    public:
+        T operator()(const F &v) {
+            return boost::lexical_cast<T>(v);
+        }
+    };
+
+    /**
+     * @brief 类型转换模板类片特化(YAML String 转换成 std::vector<T>)
+     */
     template<class T>
+    class LexicalCast<std::string, std::vector<T> > {
+    public:
+        std::vector<T> operator()(const std::string &v) {
+            YAML::Node node = YAML::Load(v);
+            typename std::vector<T> vec;
+            std::stringstream ss;
+            for (size_t i = 0; i < node.size(); ++i) {
+                ss.str("");
+                ss << node[i];
+                vec.push_back(LexicalCast<std::string, T>()(ss.str()));
+            }
+            return vec;
+        }
+    };
+
+    /**
+     * @brief 类型转换模板类片特化(std::vector<T> 转换成 YAML String)
+     */
+    template<class T>
+    class LexicalCast<std::vector<T>, std::string> {
+    public:
+        std::string operator()(const std::vector<T> &v) {
+            YAML::Node node(YAML::NodeType::Sequence);
+            for (auto &i: v) {
+                node.push_back(YAML::Load(LexicalCast<T, std::string>()(i)));
+            }
+            std::stringstream ss;
+            ss << node;
+            return ss.str();
+        }
+    };
+
+    template<class T, class FromStr = LexicalCast<std::string, T>, class ToStr = LexicalCast<T, std::string>>
     class ConfigVar : public ConfigVarBase {
     public:
         using ptr = std::shared_ptr<ConfigVar>;
@@ -66,7 +110,8 @@ namespace foxzt {
 
         std::string toString() override {
             try {
-                return boost::lexical_cast<std::string>(m_val);
+                //return boost::lexical_cast<std::string>(m_val);
+                return ToStr()(m_val);
             } catch (std::exception &e) {
                 FOXZT_ERROR("ConfigVar::toString exception {} convert: {} to string", e.what(), typeid(m_val).name());
             }
@@ -75,7 +120,8 @@ namespace foxzt {
 
         bool fromString(const std::string &val) override {
             try {
-                m_val = boost::lexical_cast<T>(val);
+                //m_val = boost::lexical_cast<T>(val);
+                setMVal(FromStr()(val));
             } catch (std::exception &e) {
                 FOXZT_ERROR("ConfigVar::fromString exception {} convert: string to {}", e.what(), typeid(m_val).name());
             }
@@ -138,10 +184,10 @@ namespace foxzt {
     private:
         static ConfigVarMap s_datas;
 
-        static ConfigVarMap & GetDatas();
+        static ConfigVarMap &GetDatas();
     };
 
-    Config::ConfigVarMap & Config::GetDatas() {
+    Config::ConfigVarMap &Config::GetDatas() {
         //static ConfigVarMap s_datas;
         return s_datas;
     }
