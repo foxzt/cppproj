@@ -73,9 +73,9 @@ namespace foxzt {
             YAML::Node node = YAML::Load(v);
             typename std::vector<T> vec;
             std::stringstream ss;
-            for (size_t i = 0; i < node.size(); ++i) {
+            for (auto &&i: node) {
                 ss.str("");
-                ss << node[i];
+                ss << i;
                 vec.push_back(LexicalCast<std::string, T>()(ss.str()));
             }
             return vec;
@@ -120,7 +120,7 @@ namespace foxzt {
 
         bool fromString(const std::string &val) override {
             try {
-                //m_val = boost::lexical_cast<T>(val);
+                //setMVal(boost::lexical_cast<T>(val));
                 setMVal(FromStr()(val));
             } catch (std::exception &e) {
                 FOXZT_ERROR("ConfigVar::fromString exception {} convert: string to {}", e.what(), typeid(m_val).name());
@@ -204,7 +204,9 @@ namespace foxzt {
                               std::list<std::pair<std::string, const YAML::Node>> &output) {
         if (prefix.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._0123456789")
             != std::string::npos) {
-            std::cerr << "Config invalid name: " << prefix << " : " << node;
+            std::stringstream ss;
+            ss << node;
+            FOXZT_ERROR("Config invalid name: {} : {}", prefix, ss.str());
             return;
         }
         output.emplace_back(prefix, node);
