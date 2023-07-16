@@ -3,6 +3,6 @@
 //
 
 #include "config.h"
-namespace foxzt{
 
+namespace foxzt {
 }

@@ -17,6 +17,20 @@ public:
     }
 };
 
+class Config {
+public:
+    typedef std::unordered_map<std::string, ConfigVarBase::ptr> ConfigVarMap;
+
+private:
+    //static ConfigVarMap s_datas;
+
+    static ConfigVarMap &GetDatas();
+};
+Config::ConfigVarMap &Config::GetDatas() {
+    static ConfigVarMap s_datas;
+    return s_datas;
+}
+
 int main() {
     std::shared_ptr<Base<int>> basePtr = std::make_shared<Derived<int>>();
 

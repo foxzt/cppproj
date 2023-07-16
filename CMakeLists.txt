@@ -34,21 +34,21 @@ add_library(foxzt STATIC ${LIB_SRC})
 link_libraries(${LIB})
 
 #添加测试环境代码可执行文件
-add_executable(test_evn tests/test_environment/test_evn.cpp)
+add_executable(test_evn tests/test_evn.cpp)
 
-add_executable(test_boost tests/test_environment/test_boost.cpp)
+add_executable(test_boost tests/test_boost.cpp)
 
-add_executable(test_yamlcpp tests/test_environment/test_yamlcpp.cpp)
+add_executable(test_yamlcpp tests/test_yamlcpp.cpp)
 
-add_executable(test_json tests/test_environment/test_json.cpp)
+add_executable(test_json tests/test_json.cpp)
 
-add_executable(mytest tests/test_environment/mytest.cpp)
+add_executable(mytest tests/mytest.cpp)
 
-add_executable(test_spdlog tests/test_environment/test_spdlog.cpp)
+add_executable(test_spdlog tests/test_spdlog.cpp)
 
-add_executable(test_fmt tests/test_environment/test_fmt.cpp)
+add_executable(test_fmt tests/test_fmt.cpp)
 
-add_executable(test_config tests/test_environment/test_config.cpp)
+add_executable(test_config tests/test_config.cpp)
 
 install(TARGETS foxzt LIBRARY DESTINATION /thirdlib/lib)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/foxzt
