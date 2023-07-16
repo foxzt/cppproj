@@ -318,12 +318,21 @@ namespace foxzt {
         }
 
         void setMVal(T mVal) {
+            {
+                if (mVal == m_val) {
+                    return;
+                }
+                for (auto &i: m_cbs) {
+                    i.second(m_val, mVal);
+                }
+            }
             m_val = mVal;
         }
 
         T getMVal() const {
             return m_val;
         }
+
         uint64_t addListener(on_change_cb cb) {
             static uint64_t s_fun_id = 0;
             ++s_fun_id;
@@ -333,6 +342,10 @@ namespace foxzt {
 
         void delListener(uint64_t key) {
             m_cbs.erase(key);
+        }
+
+        void clearListener() {
+            m_cbs.clear();
         }
 
         on_change_cb getListener(uint64_t key) {

@@ -105,10 +105,14 @@ foxzt::ConfigVar<std::map<std::string, std::vector<Person> > >::ptr g_person_vec
         foxzt::Config::Lookup("class.vec_map", std::map<std::string, std::vector<Person> >(), "system person");
 
 void test_class() {
+    g_person->addListener([](const Person &old_value, const Person &new_value) {
+        std::cout << "old_value=" << old_value.toString()
+                  << " new_value=" << new_value.toString() << std::endl;
+    });
     std::cout << "before: " << g_person->getMVal().toString() << std::endl;
 
     const auto &ma = g_person_map->getMVal();
-    std::cout << "g_person_map size:" << g_person_vec_map->getMVal().size() << std::endl;
+    std::cout << "g_person_vec_map size:" << g_person_vec_map->getMVal().size() << std::endl;
     for (const auto &i: ma) {
         std::cout << i.first << i.second.toString() << std::endl;
     }
@@ -119,17 +123,14 @@ void test_class() {
 
     std::cout << "after: " << g_person->getMVal().toString() << std::endl;
     const auto &ma1 = g_person_map->getMVal();
-    std::cout << "g_person_map size:" << g_person_vec_map->getMVal().size() << std::endl;
+    std::cout << "g_person_vec_map size:" << g_person_vec_map->getMVal().size() << std::endl;
     const auto &maa = g_person_vec_map->getMVal();
-    for (const auto& i: maa) {
-        for (const auto& ii: i.second) {
+    for (const auto &i: maa) {
+        std::cout << i.first << std::endl;
+        for (const auto &ii: i.second) {
             std::cout << ii.toString() << std::endl;
         }
     }
-
-//    for (const auto &i: ma1) {
-//        std::cout << i.first << i.second.toString() << std::endl;
-//    }
 }
 
 int main() {
