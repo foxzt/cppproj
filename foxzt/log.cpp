@@ -3,7 +3,7 @@
 //
 
 #include "log.h"
-#include "config.h"
+#include <yaml-cpp/yaml.h>
 
 namespace foxzt {
     std::string logLevelToString(LogLevel level) {

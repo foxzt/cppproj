@@ -104,5 +104,4 @@ namespace foxzt {
     };
 
     static LogIniter log_init;
-
 }

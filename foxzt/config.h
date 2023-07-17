@@ -309,7 +309,9 @@ namespace foxzt {
                     if (!a["type"].IsDefined()) {
                         std::stringstream ss;
                         ss << a;
-                        FOXZT_ERROR("log config error: logger has a invalid appender which type is null, detailed information:\n{}", ss.str());
+                        FOXZT_ERROR(
+                                "log config error: logger has a invalid appender which type is null, detailed information:\n{}",
+                                ss.str());
                         throw std::logic_error("log config error: logger has a invalid appender which type is null");
                     }
                     std::string type = a["type"].as<std::string>();
@@ -497,6 +499,8 @@ namespace foxzt {
     private:
         static ConfigVarMap &GetDatas();
     };
+
+    extern foxzt::ConfigVar<std::set<foxzt::LogDefine>>::ptr g_log_defines;
 }
 
 #endif //CPPPROJ_CONFIG_H

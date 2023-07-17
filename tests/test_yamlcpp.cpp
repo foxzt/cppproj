@@ -3,9 +3,7 @@
 #include <yaml-cpp/yaml.h>
 #include <map>
 #include "foxzt/log.h"
-#include "foxzt/config.h"
 
-// NOLINT(cppcoreguidelines-recursion)
 void printYamlNodeType(const YAML::Node &node, int level = 0) {
     if (node.IsNull()) return;
     if (node.IsScalar()) {

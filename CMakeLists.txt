@@ -21,8 +21,8 @@ set(LIB_SRC
 
 #设置需要链接的库
 set(LIB
-        fmt
         yaml-cpp
+        fmt
         jsoncpp
         foxzt
         spdlog
@@ -30,6 +30,7 @@ set(LIB
 
 #编译成库
 add_library(foxzt STATIC ${LIB_SRC})
+target_link_libraries(foxzt yaml-cpp fmt)
 
 link_libraries(${LIB})
 

@@ -3,6 +3,7 @@
 #include "foxzt/log.h"
 #include "foxzt/config.h"
 
+#if 0
 foxzt::ConfigVar<int>::ptr g_int = foxzt::Config::Lookup<int>("system.port", (int) 8080, "system port");
 
 //foxzt::ConfigVar<float>::ptr g_int_float_config = foxzt::Config::Lookup("system.port", (float) 8080, "system port");
@@ -134,7 +135,7 @@ void test_class() {
     }
 }
 
-
+#endif
 
 void test_log_config() {
     FOXZT_INFO("hello");
@@ -147,9 +148,10 @@ void test_log_config() {
     FOXZT_LOGGER_ERROR(LOGGER_NAME_RAW("system"), "hello");
 }
 
+
 int main() {
 
     test_log_config();
-
+    FOXZT_INFO("hello");
     return 0;
 }

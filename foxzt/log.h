@@ -17,6 +17,7 @@
 #include <cstdarg>
 #include <list>
 #include <fmt/core.h>
+
 #include <ostream>
 #include "singleton.h"
 #include "util.h"
