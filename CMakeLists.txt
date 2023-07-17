@@ -21,8 +21,6 @@ set(LIB_SRC
 
 #设置需要链接的库
 set(LIB
-        yaml-cpp
-        fmt
         jsoncpp
         foxzt
         spdlog
@@ -51,6 +49,7 @@ add_executable(test_fmt tests/test_fmt.cpp)
 
 add_executable(test_config tests/test_config.cpp)
 
+set(CMAKE_INSTALL_PREFIX "/thirdlib" CACHE PATH "Installation prefix")
 install(TARGETS foxzt LIBRARY DESTINATION /thirdlib/lib)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/foxzt
         DESTINATION /thirdlib/include
