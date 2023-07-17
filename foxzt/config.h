@@ -283,6 +283,100 @@ namespace foxzt {
         }
     };
 
+    template<>
+    class LexicalCast<std::string, LogDefine> {
+    public:
+        LogDefine operator()(const std::string &v) {
+            YAML::Node n = YAML::Load(v);
+            LogDefine ld;
+            if (!n["name"].IsDefined()) {
+                std::cout << "log config error: name is null, " << n
+                          << std::endl;
+                std::stringstream ss;
+                ss << n;
+                FOXZT_ERROR("log config error: name is null, detailed information:\n{}", ss.str());
+                throw std::logic_error("log config error: logger name is null");
+            }
+            ld.name = n["name"].as<std::string>();
+            ld.level = logLevelFromString(n["level"].IsDefined() ? n["level"].as<std::string>() : "");
+            if (n["formatter"].IsDefined()) {
+                ld.formatter = n["formatter"].as<std::string>();
+            }
+
+            if (n["appenders"].IsDefined()) {
+                for (size_t x = 0; x < n["appenders"].size(); ++x) {
+                    auto a = n["appenders"][x];
+                    if (!a["type"].IsDefined()) {
+                        std::stringstream ss;
+                        ss << a;
+                        FOXZT_ERROR("log config error: logger has a invalid appender which type is null, detailed information:\n{}", ss.str());
+                        throw std::logic_error("log config error: logger has a invalid appender which type is null");
+                    }
+                    std::string type = a["type"].as<std::string>();
+                    LogAppenderDefine lad;
+                    if (type == "FileLogAppender") {
+                        lad.type = 1;
+                        if (!a["file"].IsDefined()) {
+                            std::cout << "log config error: FileAppender file is null, " << a
+                                      << std::endl;
+                            continue;
+                        }
+                        lad.file = a["file"].as<std::string>();
+                        if (a["level"].IsDefined()) {
+                            lad.level = logLevelFromString(a["level"].as<std::string>());
+                        }
+                    } else if (type == "StdoutLogAppender") {
+                        lad.type = 2;
+                        if (a["level"].IsDefined()) {
+                            lad.level = logLevelFromString(a["level"].as<std::string>());
+                        }
+                    } else {
+                        std::cout << "log config error: appender type is invalid, " << a
+                                  << std::endl;
+                        continue;
+                    }
+
+                    ld.appenders.push_back(lad);
+                }
+            }
+            return ld;
+        }
+    };
+
+    template<>
+    class LexicalCast<LogDefine, std::string> {
+    public:
+        std::string operator()(const LogDefine &i) {
+            YAML::Node n;
+            n["name"] = i.name;
+            if (i.level != (LogLevel) -1) {
+                n["level"] = logLevelToString(i.level);
+            }
+            if (!i.formatter.empty()) {
+                n["formatter"] = i.formatter;
+            }
+
+            for (auto &a: i.appenders) {
+                YAML::Node na;
+                if (a.type == 1) {
+                    na["type"] = "FileLogAppender";
+                    na["file"] = a.file;
+                } else if (a.type == 2) {
+                    na["type"] = "StdoutLogAppender";
+                }
+                if (a.level != (LogLevel) -1) {
+                    na["level"] = logLevelToString(a.level);
+                    FOXZT_INFO(logLevelToString(a.level));//调试
+                }
+
+                n["appenders"].push_back(na);
+            }
+            std::stringstream ss;
+            ss << n;
+            return ss.str();
+        }
+    };
+
     template<class T, class FromStr = LexicalCast<std::string, T>, class ToStr = LexicalCast<T, std::string>>
     class ConfigVar : public ConfigVarBase {
     public:
@@ -295,7 +389,6 @@ namespace foxzt {
 
         std::string toString() override {
             try {
-                //return boost::lexical_cast<std::string>(m_val);
                 return ToStr()(m_val);
             } catch (std::exception &e) {
                 FOXZT_ERROR("ConfigVar::toString exception {} convert: {} to string", e.what(), typeid(m_val).name());
@@ -305,7 +398,6 @@ namespace foxzt {
 
         bool fromString(const std::string &val) override {
             try {
-                //setMVal(boost::lexical_cast<T>(val));
                 setMVal(FromStr()(val));
             } catch (std::exception &e) {
                 FOXZT_ERROR("ConfigVar::fromString exception {} convert: string to {}", e.what(), typeid(m_val).name());
@@ -403,67 +495,11 @@ namespace foxzt {
         static void LoadFromYaml(const YAML::Node &root);
 
     private:
-        //static ConfigVarMap s_datas;
-
         static ConfigVarMap &GetDatas();
     };
 
-    Config::ConfigVarMap &Config::GetDatas() {
-        static ConfigVarMap s_datas;
-        return s_datas;
-    }
+    //extern ConfigVar<std::set<LogDefine>>::ptr g_log_defines;
 
-    //Config::ConfigVarMap Config::s_datas;
-
-    ConfigVarBase::ptr Config::LookupBase(const std::string &name) {
-        auto it = GetDatas().find(name);
-        return it == GetDatas().end() ? nullptr : it->second;
-    }
-
-    static void ListAllMember(const std::string &prefix,
-                              const YAML::Node &node,
-                              std::list<std::pair<std::string, const YAML::Node>> &output) {
-        if (prefix.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._0123456789")
-            != std::string::npos) {
-            std::stringstream ss;
-            ss << node;
-            FOXZT_ERROR("Config invalid name: {} : {}", prefix, ss.str());
-            return;
-        }
-        output.emplace_back(prefix, node);
-        if (node.IsMap()) {
-            for (auto it = node.begin();
-                 it != node.end(); ++it) {
-                ListAllMember(prefix.empty() ? it->first.Scalar()
-                                             : prefix + "." + it->first.Scalar(), it->second, output);
-            }
-        }
-    }
-
-    void Config::LoadFromYaml(const YAML::Node &root) {
-        std::list<std::pair<std::string, const YAML::Node> > all_nodes;
-        ListAllMember("", root, all_nodes);
-
-        for (auto &i: all_nodes) {
-            std::string key = i.first;
-            if (key.empty()) {
-                continue;
-            }
-
-            std::transform(key.begin(), key.end(), key.begin(), ::tolower);
-            ConfigVarBase::ptr var = LookupBase(key);
-
-            if (var) {
-                if (i.second.IsScalar()) {
-                    var->fromString(i.second.Scalar());
-                } else {
-                    std::stringstream ss;
-                    ss << i.second;
-                    var->fromString(ss.str());
-                }
-            }
-        }
-    }
 }
 
 #endif //CPPPROJ_CONFIG_H

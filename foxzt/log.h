@@ -17,6 +17,7 @@
 #include <cstdarg>
 #include <list>
 #include <fmt/core.h>
+#include <ostream>
 #include "singleton.h"
 #include "util.h"
 
@@ -69,6 +70,8 @@ namespace foxzt {
     };
 
     std::string logLevelToString(LogLevel level);
+
+    LogLevel logLevelFromString(const std::string &levelString);
 
 
     class LogEvent {
@@ -145,6 +148,8 @@ namespace foxzt {
 
         std::ostream &format(std::ostream &ofs, LogLevel level, const LogEvent::ptr &event);
 
+        const std::string &getMPattern() const;
+
     public:
         class FormatItem {
         public:
@@ -178,6 +183,8 @@ namespace foxzt {
             m_formatter = std::move(mFormatter);
         }
 
+        virtual std::string toYamlString() = 0;
+
     protected:
         /// 日志级别
         LogLevel m_level = LogLevel::DEBUG;
@@ -190,6 +197,8 @@ namespace foxzt {
         using ptr = std::shared_ptr<StdoutLogAppender>;
 
         void log(LogLevel level, LogEvent::ptr event) override;
+
+        std::string toYamlString() override;
     };
 
     class FileLogAppender : public LogAppender {
@@ -205,6 +214,8 @@ namespace foxzt {
         }
 
         void log(LogLevel level, LogEvent::ptr event) override;
+
+        std::string toYamlString() override;
 
     private:
         /// 文件路径
@@ -276,6 +287,8 @@ namespace foxzt {
 
         void setFormatter(const std::string &val);
 
+        std::string toYamlString();
+
     private:
         /// 日志名称
         std::string m_name;
@@ -295,6 +308,7 @@ namespace foxzt {
 
         Logger::ptr getDefault() const { return m_default; }
 
+        std::string toYamlString();
     private:
         /// 日志器容器
         std::map<std::string, Logger::ptr> m_loggers;
@@ -303,6 +317,33 @@ namespace foxzt {
     };
 
     typedef Singleton<LoggerManager> LoggerMgr;
+
+    struct LogAppenderDefine {
+        int type = 0; //1 File, 2 Stdout
+        LogLevel level = (LogLevel) -1;
+        std::string file;
+
+        bool operator==(const LogAppenderDefine &oth) const {
+            return type == oth.type
+                   && level == oth.level
+                   && file == oth.file;
+        }
+    };
+
+    struct LogDefine {
+        std::string name;
+        LogLevel level = (LogLevel) -1;
+        std::string formatter;
+        std::vector<LogAppenderDefine> appenders;
+
+        bool operator==(const LogDefine &oth) const {
+            return name == oth.name;
+        }
+
+        bool operator<(const LogDefine &oth) const {
+            return name < oth.name;
+        }
+    };
 }
 
 #endif //CPPPROJ_LOG_H

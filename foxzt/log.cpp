@@ -3,9 +3,7 @@
 //
 
 #include "log.h"
-
-#include <utility>
-
+#include "config.h"
 
 namespace foxzt {
     std::string logLevelToString(LogLevel level) {
@@ -15,13 +13,38 @@ namespace foxzt {
             case LogLevel::INFO:
                 return "INFO";
             case LogLevel::WARN:
-                return "WARNING";
+                return "WARN";
             case LogLevel::ERROR:
                 return "ERROR";
             case LogLevel::FATAL:
                 return "FATAL";
             default:
                 return "UNKNOWN";
+        }
+    }
+
+    LogLevel logLevelFromString(const std::string &levelString) {
+        static const std::unordered_map<std::string, LogLevel> levelMap{
+                {"DEBUG", LogLevel::DEBUG},
+                {"INFO",  LogLevel::INFO},
+                {"WARN",  LogLevel::WARN},
+                {"ERROR", LogLevel::ERROR},
+                {"FATAL", LogLevel::FATAL},
+                {"debug", LogLevel::DEBUG},
+                {"info",  LogLevel::INFO},
+                {"warn",  LogLevel::WARN},
+                {"error", LogLevel::ERROR},
+                {"fatal", LogLevel::FATAL}
+        };
+
+        auto iter = levelMap.find(levelString);
+        if (iter != levelMap.end()) {
+            return iter->second;
+        } else {
+            // 处理无效的日志级别字符串
+            throw std::runtime_error("Invalid log level");
+            // 或者返回默认级别
+            //return LogLevel::DEBUG;
         }
     }
 
@@ -46,10 +69,33 @@ namespace foxzt {
         }
     }
 
+    std::string StdoutLogAppender::toYamlString() {
+        YAML::Node node;
+        node["type"] = "StdoutLogAppender";
+        if (m_level != (LogLevel) -1) {
+            node["level"] = logLevelToString(m_level);
+        }
+        std::stringstream ss;
+        ss << node;
+        return ss.str();
+    }
+
     void FileLogAppender::log(LogLevel level, LogEvent::ptr event) {
         if (level >= m_level) {
             m_formatter->format(m_filestream, level, event);
         }
+    }
+
+    std::string FileLogAppender::toYamlString() {
+        YAML::Node node;
+        node["type"] = "FileLogAppender";
+        node["file"] = m_filename;
+        if (m_level != (LogLevel) -1) {
+            node["level"] = logLevelToString(m_level);
+        }
+        std::stringstream ss;
+        ss << node;
+        return ss.str();
     }
 
     void Logger::setFormatter(const std::string &val) {
@@ -107,6 +153,24 @@ namespace foxzt {
 
     void Logger::fatal(const LogEvent::ptr &event) {
         log(LogLevel::FATAL, event);
+    }
+
+    std::string Logger::toYamlString() {
+        YAML::Node node;
+        node["name"] = m_name;
+        if (m_level != (LogLevel) -1) {
+            node["level"] = logLevelToString(m_level);
+        }
+        if (m_formatter) {
+            node["formatter"] = m_formatter->getMPattern();
+        }
+
+        for (auto &i: m_appenders) {
+            node["appenders"].push_back(YAML::Load(i->toYamlString()));
+        }
+        std::stringstream ss;
+        ss << node;
+        return ss.str();
     }
 
     //日志级别
@@ -356,6 +420,10 @@ namespace foxzt {
         m_items.push_back(std::shared_ptr<FormatItem>(new NewLineFormatItem));
     }
 
+    const std::string &LogFormatter::getMPattern() const {
+        return m_pattern;
+    }
+
     LoggerManager::LoggerManager() {
         m_default.reset(new Logger);
         m_loggers[m_default->getMName()] = m_default;
@@ -370,5 +438,15 @@ namespace foxzt {
         Logger::ptr logger(new Logger(name));
         m_loggers[name] = logger;
         return logger;
+    }
+
+    std::string LoggerManager::toYamlString() {
+        YAML::Node node;
+        for (auto &i: m_loggers) {
+            node.push_back(YAML::Load(i.second->toYamlString()));
+        }
+        std::stringstream ss;
+        ss << node;
+        return ss.str();
     }
 }

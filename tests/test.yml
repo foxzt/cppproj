@@ -1,0 +1,51 @@
+logs:
+  - name: root
+    level: info
+    appenders:
+      - type: FileLogAppender
+        file: root.txt
+      - type: StdoutLogAppender
+  - name: system
+    level: info
+    appenders:
+      - type: FileLogAppender
+        file: system.txt
+      - type: StdoutLogAppender
+system:
+  port: 808080
+  pattern: "[%Y-%m-%d %H:%M:%S.%e] [%l] [%@]: %v"
+  int_vec:
+    - 10
+    - 20
+  str_int_map:
+    k: 3
+    kk: 33
+class:
+  person:
+    name: foxzt
+    age: 21
+    sex: true
+  map:
+    person1:
+      name: tom
+      age: 18
+      sex: true
+    person2:
+      name: jerry
+      age: 19
+      sex: true
+  vec_map:
+      v1:
+        - name: tom
+          age: 19
+          sex: true
+        - name: jerry
+          age: 20
+          sex: false
+      v2:
+        - name: tom1
+          age: 191
+          sex: true
+        - name: jerry1
+          age: 201
+          sex: false
