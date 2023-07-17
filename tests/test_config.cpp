@@ -137,14 +137,14 @@ void test_class() {
 
 
 void test_log_config() {
-    auto logger = LOGGER_NAME_RAW("system");
-    logger->setFormatter("[%Y-%m-%d] [%l] [%n] [%@]: %v");
-    FOXZT_LOGGER_INFO(LOGGER_NAME_RAW("system"), "hello");
+    FOXZT_INFO("hello");
     std::cout << foxzt::LoggerMgr::GetInstance()->toYamlString() << std::endl;
+
     YAML::Node node = YAML::LoadFile("../tests/log.yml");
     foxzt::Config::LoadFromYaml(node);
+
     std::cout << foxzt::LoggerMgr::GetInstance()->toYamlString() << std::endl;
-    FOXZT_LOGGER_INFO(LOGGER_NAME_RAW("system"), "hello");
+    FOXZT_LOGGER_ERROR(LOGGER_NAME_RAW("system"), "hello");
 }
 
 int main() {
