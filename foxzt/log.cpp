@@ -176,7 +176,7 @@ namespace foxzt {
     //日志级别
     class LevelFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit LevelFormatItem(const std::string &str = "") {}
+        explicit LevelFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             os << logLevelToString(event->getMLevel());
@@ -186,7 +186,7 @@ namespace foxzt {
     //日志器名称
     class LoggerNameFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit LoggerNameFormatItem(const std::string &str = "") {}
+        explicit LoggerNameFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             os << event->getMLoggerName();
@@ -196,7 +196,7 @@ namespace foxzt {
     //线程号
     class ThreadIdFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit ThreadIdFormatItem(const std::string &str = "") {}
+        explicit ThreadIdFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             os << event->getMThreadId();
@@ -206,7 +206,7 @@ namespace foxzt {
     //协程号
     class FiberIdFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit FiberIdFormatItem(const std::string &str = "") {}
+        explicit FiberIdFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             os << event->getMFiberId();
@@ -216,7 +216,7 @@ namespace foxzt {
     //文件名
     class FilenameFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit FilenameFormatItem(const std::string &str = "") {}
+        explicit FilenameFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             os << event->getMFile();
@@ -226,7 +226,7 @@ namespace foxzt {
     //行号
     class LineFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit LineFormatItem(const std::string &str = "") {}
+        explicit LineFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             os << event->getMLine();
@@ -236,7 +236,7 @@ namespace foxzt {
     //换行
     class NewLineFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit NewLineFormatItem(const std::string &str = "") {}
+        explicit NewLineFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             os << std::endl;
@@ -259,7 +259,7 @@ namespace foxzt {
     //消息
     class MessageFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit MessageFormatItem(const std::string &str = "") {}
+        explicit MessageFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             os << event->getContent();
@@ -269,7 +269,7 @@ namespace foxzt {
     //年
     class YearFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit YearFormatItem(const std::string &str = "") {}
+        explicit YearFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             std::time_t now_c = std::chrono::system_clock::to_time_t(event->getMTime());
@@ -280,7 +280,7 @@ namespace foxzt {
     //月
     class MonthFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit MonthFormatItem(const std::string &str = "") {}
+        explicit MonthFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             std::time_t now_c = std::chrono::system_clock::to_time_t(event->getMTime());
@@ -291,7 +291,7 @@ namespace foxzt {
     //日
     class DayFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit DayFormatItem(const std::string &str = "") {}
+        explicit DayFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             std::time_t now_c = std::chrono::system_clock::to_time_t(event->getMTime());
@@ -302,7 +302,7 @@ namespace foxzt {
     //小时
     class HourFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit HourFormatItem(const std::string &str = "") {}
+        explicit HourFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             std::time_t now_c = std::chrono::system_clock::to_time_t(event->getMTime());
@@ -313,7 +313,7 @@ namespace foxzt {
     //分钟
     class MinuteFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit MinuteFormatItem(const std::string &str = "") {}
+        explicit MinuteFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             std::time_t now_c = std::chrono::system_clock::to_time_t(event->getMTime());
@@ -324,7 +324,7 @@ namespace foxzt {
     //秒
     class SecondFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit SecondFormatItem(const std::string &str = "") {}
+        explicit SecondFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             std::time_t now_c = std::chrono::system_clock::to_time_t(event->getMTime());
@@ -335,7 +335,7 @@ namespace foxzt {
     //毫秒
     class MillisecondsFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit MillisecondsFormatItem(const std::string &str = "") {}
+        explicit MillisecondsFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             auto ms =
@@ -347,7 +347,7 @@ namespace foxzt {
     //文件名：行号
     class FilenameAndLineFormatItem : public LogFormatter::FormatItem {
     public:
-        explicit FilenameAndLineFormatItem(const std::string &str = "") {}
+        explicit FilenameAndLineFormatItem() = default;
 
         void format(std::ostream &os, LogLevel level, LogEvent::ptr event) override {
             os << event->getMFile() << ":" << event->getMLine();

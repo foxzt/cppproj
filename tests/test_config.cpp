@@ -144,8 +144,6 @@ void test_log_config() {
     YAML::Node node = YAML::LoadFile("../tests/log.yml");
     foxzt::Config::LoadFromYaml(node);
     std::cout << foxzt::LoggerMgr::GetInstance()->toYamlString() << std::endl;
-//    auto g = g_log_defines->toString();
-//    std::cout << g << std::endl;
     FOXZT_LOGGER_INFO(LOGGER_NAME_RAW("system"), "hello");
 }
 

@@ -69,7 +69,7 @@ namespace foxzt {
         LogIniter() {
             g_log_defines->addListener([](const std::set<foxzt::LogDefine> &old_value,
                                           const std::set<foxzt::LogDefine> &new_value) {
-                FOXZT_INFO("on_logger_conf_changed");
+                //FOXZT_INFO("on_logger_conf_changed");
                 for (auto &i: new_value) {
                     foxzt::Logger::ptr logger;
                     logger = LOGGER_NAME_RAW(i.name);
