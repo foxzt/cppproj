@@ -497,9 +497,6 @@ namespace foxzt {
     private:
         static ConfigVarMap &GetDatas();
     };
-
-    //extern ConfigVar<std::set<LogDefine>>::ptr g_log_defines;
-
 }
 
 #endif //CPPPROJ_CONFIG_H

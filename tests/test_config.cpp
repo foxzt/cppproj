@@ -134,48 +134,7 @@ void test_class() {
     }
 }
 
-foxzt::ConfigVar<std::set<foxzt::LogDefine>>::ptr g_log_defines =
-        foxzt::Config::Lookup("logs", std::set<foxzt::LogDefine>(), "logs config");
 
-struct LogIniter {
-    LogIniter() {
-        g_log_defines->addListener([](const std::set<foxzt::LogDefine> &old_value,
-                                      const std::set<foxzt::LogDefine> &new_value) {
-            FOXZT_INFO("on_logger_conf_changed");
-            for (auto &i: new_value) {
-                foxzt::Logger::ptr logger;
-                logger = LOGGER_NAME_RAW(i.name);
-                logger->setMLevel(i.level);
-                if (!i.formatter.empty()) {
-                    logger->setFormatter(i.formatter);
-                }
-
-                logger->clearAppenders();
-                for (auto &a: i.appenders) {
-                    foxzt::LogAppender::ptr ap;
-                    if (a.type == 1) {
-                        ap.reset(new foxzt::FileLogAppender(a.file));
-                    } else if (a.type == 2) {
-                        ap.reset(new foxzt::StdoutLogAppender);
-                    }
-                    ap->setMLevel(a.level);
-                    logger->addAppender(ap);
-                }
-            }
-
-            for (auto &i: old_value) {
-                auto it = new_value.find(i);
-                if (it == new_value.end()) {
-                    //删除logger
-                    auto logger = LOGGER_NAME_RAW(i.name);
-                    logger->clearAppenders();
-                }
-            }
-        });
-    }
-};
-
-static LogIniter log_init;
 
 void test_log_config() {
     auto logger = LOGGER_NAME_RAW("system");

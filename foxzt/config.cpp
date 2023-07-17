@@ -61,49 +61,48 @@ namespace foxzt {
         }
     }
 
+    ///为日志系统配置添加回调函数（冷知识，静态变量的初始化在main函数之前）
+    foxzt::ConfigVar<std::set<foxzt::LogDefine>>::ptr g_log_defines =
+            foxzt::Config::Lookup("logs", std::set<foxzt::LogDefine>(), "logs config");
 
+    struct LogIniter {
+        LogIniter() {
+            g_log_defines->addListener([](const std::set<foxzt::LogDefine> &old_value,
+                                          const std::set<foxzt::LogDefine> &new_value) {
+                FOXZT_INFO("on_logger_conf_changed");
+                for (auto &i: new_value) {
+                    foxzt::Logger::ptr logger;
+                    logger = LOGGER_NAME_RAW(i.name);
+                    logger->setMLevel(i.level);
+                    if (!i.formatter.empty()) {
+                        logger->setFormatter(i.formatter);
+                    }
 
-//    ConfigVar<std::set<LogDefine>>::ptr g_log_defines =
-//            Config::Lookup("logs", std::set<LogDefine>(), "logs config");
+                    logger->clearAppenders();
+                    for (auto &a: i.appenders) {
+                        foxzt::LogAppender::ptr ap;
+                        if (a.type == 1) {
+                            ap.reset(new foxzt::FileLogAppender(a.file));
+                        } else if (a.type == 2) {
+                            ap.reset(new foxzt::StdoutLogAppender);
+                        }
+                        ap->setMLevel(a.level);
+                        logger->addAppender(ap);
+                    }
+                }
 
-//    struct LogIniter {
-//        LogIniter() {
-//            g_log_defines->addListener([](const std::set<LogDefine> &old_value,
-//                                          const std::set<LogDefine> &new_value) {
-//                FOXZT_INFO("on_logger_conf_changed");
-//                for (auto &i: new_value) {
-//                    foxzt::Logger::ptr logger;
-//                    logger = LOGGER_NAME_RAW(i.name);
-//                    logger->setMLevel(i.level);
-//                    if (!i.formatter.empty()) {
-//                        logger->setFormatter(i.formatter);
-//                    }
-//
-//                    logger->clearAppenders();
-//                    for (auto &a: i.appenders) {
-//                        foxzt::LogAppender::ptr ap;
-//                        if (a.type == 1) {
-//                            ap.reset(new FileLogAppender(a.file));
-//                        } else if (a.type == 2) {
-//                            ap.reset(new StdoutLogAppender);
-//                        }
-//                        ap->setMLevel(a.level);
-//                        logger->addAppender(ap);
-//                    }
-//                }
-//
-//                for (auto &i: old_value) {
-//                    auto it = new_value.find(i);
-//                    if (it == new_value.end()) {
-//                        //删除logger
-//                        auto logger = LOGGER_NAME_RAW(i.name);
-//                        logger->clearAppenders();
-//                    }
-//                }
-//            });
-//        }
-//    };
-//
-//    static LogIniter log_init;
+                for (auto &i: old_value) {
+                    auto it = new_value.find(i);
+                    if (it == new_value.end()) {
+                        //删除logger
+                        auto logger = LOGGER_NAME_RAW(i.name);
+                        logger->clearAppenders();
+                    }
+                }
+            });
+        }
+    };
+
+    static LogIniter log_init;
 
 }
