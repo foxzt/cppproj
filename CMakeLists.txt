@@ -30,10 +30,8 @@ set(LIB
         spdlog
         )
 
-#编译成库
-add_subdirectory(fmt)
 add_library(foxzt STATIC ${LIB_SRC})
-target_link_libraries(foxzt yaml-cpp fmt-header-only)
+target_link_libraries(foxzt yaml-cpp fmt)
 
 link_libraries(${LIB})
 
