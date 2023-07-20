@@ -1,25 +1,17 @@
 logs:
-  - name: root
+  - name: default
     level: info
+    formatter: "[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] [%@]: %v"
     appenders:
       - type: FileLogAppender
-        file: root.txt
+        file: default_log.txt
       - type: StdoutLogAppender
   - name: system
     level: warn
     formatter: "[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] [%@]: %v"
     appenders:
       - type: FileLogAppender
-        file: system.txt
         level: error
-      - type: StdoutLogAppender
-        level: warn
-  - name: test
-    level: warn
-    formatter: "[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] [%@]: %v"
-    appenders:
-      - type: FileLogAppender
-        file: system.txt
-        level: error
+        file: system_error_log.txt
       - type: StdoutLogAppender
         level: warn

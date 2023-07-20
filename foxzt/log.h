@@ -16,9 +16,13 @@
 #include <cstdint>
 #include <cstdarg>
 #include <list>
-#include <fmt/core.h>
-
 #include <ostream>
+#include <fmt/core.h>
+#include <fmt/ranges.h>
+#include <fmt/chrono.h>
+#include <fmt/os.h>
+#include <fmt/color.h>
+
 #include "singleton.h"
 #include "util.h"
 
@@ -310,6 +314,7 @@ namespace foxzt {
         Logger::ptr getDefault() const { return m_default; }
 
         std::string toYamlString();
+
     private:
         /// 日志器容器
         std::map<std::string, Logger::ptr> m_loggers;
