@@ -17,7 +17,11 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #设置编译库文件所需要的文件
 set(LIB_SRC
         foxzt/log.cpp
-        foxzt/util.cpp foxzt/config.cpp)
+        foxzt/util.cpp
+        foxzt/config.cpp
+        foxzt/thread.cpp
+        foxzt/semaphore.cpp
+        )
 
 #设置需要链接的库
 set(LIB
@@ -27,8 +31,9 @@ set(LIB
         )
 
 #编译成库
+add_subdirectory(fmt)
 add_library(foxzt STATIC ${LIB_SRC})
-target_link_libraries(foxzt yaml-cpp fmt)
+target_link_libraries(foxzt yaml-cpp fmt-header-only)
 
 link_libraries(${LIB})
 
@@ -42,6 +47,7 @@ add_executable(test_yamlcpp tests/test_yamlcpp.cpp)
 add_executable(test_json tests/test_json.cpp)
 
 add_executable(mytest tests/mytest.cpp)
+target_link_libraries(mytest pthread)
 
 add_executable(test_spdlog tests/test_spdlog.cpp)
 

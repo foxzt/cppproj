@@ -153,5 +153,6 @@ int main() {
 
     test_log_config();
     FOXZT_INFO("hello");
+    FOXZT_LOGGER_ERROR(LOGGER_NAME_RAW("test"), "test");
     return 0;
 }
