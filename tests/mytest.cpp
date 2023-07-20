@@ -17,7 +17,7 @@ int main()
     std::cout << "Done spawning threads.\n";
 
     std::cout << "(the main thread will now pause for 5 seconds)\n";
-    // give the detached threads time to finish (but not guaranteed!):
-    //pause_thread(5);
+
+    pause_thread(5);
     return 0;
 }
