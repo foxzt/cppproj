@@ -2,4 +2,4 @@
 // Created by fox on 2023/7/20.
 //
 
-#include "thread.h"
+#include "foxzt/include/thread.h"

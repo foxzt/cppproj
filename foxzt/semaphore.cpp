@@ -3,7 +3,7 @@
 //
 
 #include <stdexcept>
-#include "semaphore.h"
+#include "foxzt/include/semaphore.h"
 
 
 namespace foxzt {

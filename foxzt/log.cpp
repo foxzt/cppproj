@@ -2,7 +2,7 @@
 // Created by fox on 2023/7/10.
 //
 
-#include "log.h"
+#include "foxzt/include/log.h"
 #include <yaml-cpp/yaml.h>
 
 namespace foxzt {

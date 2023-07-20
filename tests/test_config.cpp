@@ -1,6 +1,6 @@
 #include <ostream>
-#include "foxzt/log.h"
-#include "foxzt/config.h"
+#include "foxzt/include/log.h"
+#include "foxzt/include/config.h"
 
 void test_log_config() {
     FOXZT_INFO("before: hello");

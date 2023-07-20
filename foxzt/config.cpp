@@ -2,7 +2,7 @@
 // Created by fox on 2023/7/13.
 //
 
-#include "config.h"
+#include "foxzt/include/config.h"
 
 namespace foxzt {
     Config::ConfigVarMap &Config::GetDatas() {
