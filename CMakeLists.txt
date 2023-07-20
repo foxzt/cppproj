@@ -26,20 +26,22 @@ set(LIB_SRC
 #设置需要链接的库
 set(LIB
         foxzt
+        pthread
         )
 
 add_library(foxzt STATIC ${LIB_SRC})
 target_link_libraries(foxzt yaml-cpp fmt)
-
-link_libraries(${LIB})
-
-add_executable(test_config tests/test_config.cpp)
-
-add_executable(mytest tests/mytest.cpp)
-target_link_libraries(mytest pthread)
 
 set(CMAKE_INSTALL_PREFIX "/thirdlib" CACHE PATH "Installation prefix")
 install(TARGETS foxzt LIBRARY DESTINATION /thirdlib/lib)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/foxzt
         DESTINATION /thirdlib/include
         FILES_MATCHING PATTERN "*.h")
+
+link_libraries(${LIB})
+
+add_executable(test_config tests/test_config.cpp)
+
+add_executable(mytest tests/mytest.cpp)
+
+add_executable(test_thread tests/test_thread.cpp)

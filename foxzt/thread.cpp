@@ -11,14 +11,6 @@ namespace foxzt {
     static thread_local Thread *t_thread = nullptr;
     static thread_local std::string t_thread_name = "UNKNOW";
 
-    Thread::Thread(const std::string &name, std::function<void()> cb) : m_cb(std::move(cb)), m_name(name), m_id(0) {
-        if (name.empty()) {
-            m_name = "UNKNOWN";
-        }
-        m_thread = std::thread(&Thread::run, this);
-        m_semaphore.wait();
-    }
-
     Thread::~Thread() {
         if (m_thread.joinable()) {
             m_thread.join();
@@ -58,5 +50,9 @@ namespace foxzt {
         if (m_thread.joinable()) {
             m_thread.detach();
         }
+    }
+
+    void Thread::join() {
+        m_thread.join();
     }
 }

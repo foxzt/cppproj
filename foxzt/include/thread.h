@@ -18,7 +18,16 @@ namespace foxzt {
     public:
         typedef std::shared_ptr<Thread> ptr;
 
-        Thread(const std::string &name, std::function<void()> cb);
+        template<typename... Args>
+        Thread(const std::string &name, void (*cb)(Args...), Args... args)
+                : m_cb(std::bind(cb, std::forward<Args>(args)...)), m_name(name), m_id(0) {
+            if (name.empty()) {
+                m_name = "UNKNOWN";
+            }
+            m_thread = std::thread(&Thread::run, this);
+            m_semaphore.wait();
+        }
+
 
         ~Thread();
 
@@ -31,6 +40,8 @@ namespace foxzt {
         static const std::string &GetName();
 
         void detach();
+
+        void join();
 
     private:
         void run();
