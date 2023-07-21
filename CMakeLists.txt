@@ -21,6 +21,7 @@ set(LIB_SRC
         foxzt/config.cpp
         foxzt/thread.cpp
         foxzt/semaphore.cpp
+        foxzt/mutex.cpp
         )
 
 #设置需要链接的库

@@ -1,23 +1,30 @@
-#include <iostream>       // std::cout
-#include <thread>         // std::thread, std::this_thread::sleep_for
-#include <chrono>         // std::chrono::seconds
+#include <iostream>
+#include <thread>
+#include <mutex>
 
-void pause_thread(int n)
-{
-    std::this_thread::sleep_for (std::chrono::seconds(n));
-    std::cout << "pause of " << n << " seconds ended\n";
+class MyMutex {
+public:
+    static void lock() {
+        // 实现获取锁的逻辑
+        std::cout << "MyMutex: lock acquired" << std::endl;
+    }
+
+    static void unlock() {
+        // 实现释放锁的逻辑
+        std::cout << "MyMutex: lock released" << std::endl;
+    }
+};
+
+void workerThread() {
+    MyMutex mtx;
+    std::lock_guard<MyMutex> lock(mtx);
+    // 执行需要保护的操作
+    std::cout << "Worker thread: Got the lock!" << std::endl;
 }
 
-int main()
-{
-    std::cout << "Spawning and detaching 3 threads...\n";
-    std::thread (pause_thread,1).detach();
-    std::thread (pause_thread,2).detach();
-    std::thread (pause_thread,3).detach();
-    std::cout << "Done spawning threads.\n";
+int main() {
+    std::thread worker(workerThread);
+    worker.join();
 
-    std::cout << "(the main thread will now pause for 5 seconds)\n";
-
-    pause_thread(5);
     return 0;
 }
