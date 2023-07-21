@@ -48,19 +48,10 @@ namespace foxzt {
         }
     }
 
-    std::string LogFormatter::format(LogLevel level, const LogEvent::ptr &event) {
-        std::stringstream ss;
-        for (auto &i: m_items) {
-            i->format(ss, level, event);
-        }
-        return ss.str();
-    }
-
-    std::ostream &LogFormatter::format(std::ostream &ofs, LogLevel level, const LogEvent::ptr &event) {
+    void LogFormatter::format(std::ostream &ofs, LogLevel level, const LogEvent::ptr &event) {
         for (auto &i: m_items) {
             i->format(ofs, level, event);
         }
-        return ofs;
     }
 
     void StdoutLogAppender::log(LogLevel level, LogEvent::ptr event) {

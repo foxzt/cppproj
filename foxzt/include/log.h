@@ -149,9 +149,7 @@ namespace foxzt {
 
         void init();
 
-        std::string format(LogLevel level, const LogEvent::ptr &event);
-
-        std::ostream &format(std::ostream &ofs, LogLevel level, const LogEvent::ptr &event);
+        void format(std::ostream &ofs, LogLevel level, const LogEvent::ptr &event);
 
         const std::string &getMPattern() const;
 
