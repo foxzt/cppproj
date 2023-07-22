@@ -17,6 +17,8 @@
 #include <cstdarg>
 #include <list>
 #include <ostream>
+#include <mutex>
+#include <shared_mutex>
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 #include <fmt/chrono.h>

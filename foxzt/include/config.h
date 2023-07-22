@@ -19,6 +19,7 @@
 #include <unordered_set>
 #include <functional>
 #include <shared_mutex>
+#include <iostream>
 
 #include "util.h"
 #include "log.h"
