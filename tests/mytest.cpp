@@ -1,30 +1,35 @@
 #include <iostream>
+#include <shared_mutex>
 #include <thread>
-#include <mutex>
 
-class MyMutex {
-public:
-    static void lock() {
-        // 实现获取锁的逻辑
-        std::cout << "MyMutex: lock acquired" << std::endl;
-    }
+std::shared_mutex rwLock;
+int sharedData = 0;
 
-    static void unlock() {
-        // 实现释放锁的逻辑
-        std::cout << "MyMutex: lock released" << std::endl;
-    }
-};
+// 读线程函数
+void readerThread() {
+    std::shared_lock<std::shared_mutex> lock(rwLock);
+    std::cout << "Read data: " << sharedData << std::endl;
+}
 
-void workerThread() {
-    MyMutex mtx;
-    std::lock_guard<MyMutex> lock(mtx);
-    // 执行需要保护的操作
-    std::cout << "Worker thread: Got the lock!" << std::endl;
+// 写线程函数
+void writerThread() {
+    std::unique_lock<std::shared_mutex> lock(rwLock);
+    sharedData++;
+    std::cout << "Write data: " << sharedData << std::endl;
 }
 
 int main() {
-    std::thread worker(workerThread);
-    worker.join();
+    // 创建多个读线程和写线程
+    std::thread t1(readerThread);
+    std::thread t2(readerThread);
+    std::thread t3(writerThread);
+    std::thread t4(readerThread);
+
+    // 等待线程完成
+    t1.join();
+    t2.join();
+    t3.join();
+    t4.join();
 
     return 0;
 }

@@ -10,7 +10,13 @@ namespace foxzt {
         return s_datas;
     }
 
+    Config::MutexType &Config::GetMutex() {
+        static MutexType s_mutex;
+        return s_mutex;
+    }
+
     ConfigVarBase::ptr Config::LookupBase(const std::string &name) {
+        std::shared_lock<MutexType> lock(GetMutex());
         auto it = GetDatas().find(name);
         return it == GetDatas().end() ? nullptr : it->second;
     }

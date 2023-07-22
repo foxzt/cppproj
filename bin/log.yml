@@ -4,14 +4,15 @@ logs:
     formatter: "[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] [%@]: %v"
     appenders:
       - type: FileLogAppender
-        file: default_log.txt
+        file: log.txt
       - type: StdoutLogAppender
+        #level: warn
   - name: system
-    level: warn
+    level: info
     formatter: "[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] [%@]: %v"
     appenders:
       - type: FileLogAppender
-        level: error
-        file: system_error_log.txt
+        #level: error
+        file: log.txt
       - type: StdoutLogAppender
         level: warn

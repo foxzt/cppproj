@@ -230,6 +230,7 @@ namespace foxzt {
     class Logger {
     public:
         using ptr = std::shared_ptr<Logger>;
+        using MutexType = std::mutex;
 
         explicit Logger(std::string name = "default") : m_name(std::move(name)) {
 
@@ -301,10 +302,13 @@ namespace foxzt {
         std::vector<LogAppender::ptr> m_appenders;
         /// 日志格式器
         LogFormatter::ptr m_formatter;
+
+        MutexType m_mutex;
     };
 
     class LoggerManager {
     public:
+        using MutexType = std::mutex;
         LoggerManager();
 
         Logger::ptr getLogger(const std::string &name);
@@ -318,6 +322,7 @@ namespace foxzt {
         std::map<std::string, Logger::ptr> m_loggers;
         /// 主日志器
         Logger::ptr m_default;
+        MutexType m_mutex;
     };
 
     typedef Singleton<LoggerManager> LoggerMgr;

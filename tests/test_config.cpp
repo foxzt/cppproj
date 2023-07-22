@@ -19,8 +19,5 @@ void test_log_config() {
 int main() {
     test_log_config();
 
-    auto out = fmt::output_file("guide.txt",std::ios_base::app);
-    out.print("Don't {}", "Panic");
-
     return 0;
 }

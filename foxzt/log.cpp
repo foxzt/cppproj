@@ -91,6 +91,7 @@ namespace foxzt {
 
     void Logger::setFormatter(const std::string &val) {
         LogFormatter::ptr new_val(new LogFormatter(val));
+        std::unique_lock<MutexType> lock(m_mutex);
         m_formatter = new_val;
         for (auto &i: m_appenders) {
             i->setMFormatter(m_formatter);
@@ -98,10 +99,12 @@ namespace foxzt {
     }
 
     void Logger::clearAppenders() {
+        std::unique_lock<MutexType> lock(m_mutex);
         m_appenders.clear();
     }
 
     void Logger::delAppender(const LogAppender::ptr &appender) {
+        std::unique_lock<MutexType> lock(m_mutex);
         for (auto it = m_appenders.begin();
              it != m_appenders.end(); ++it) {
             if (*it == appender) {
@@ -112,12 +115,14 @@ namespace foxzt {
     }
 
     void Logger::addAppender(const LogAppender::ptr &appender) {
+        std::unique_lock<MutexType> lock(m_mutex);
         m_appenders.push_back(appender);
         m_appenders.back()->setMFormatter(m_formatter);
     }
 
     void Logger::log(LogLevel level, const LogEvent::ptr &event) {
         if (level >= m_level) {
+            std::unique_lock<MutexType> lock(m_mutex);
             if (!m_appenders.empty()) {
                 for (auto &i: m_appenders) {
                     i->log(level, event);
@@ -147,6 +152,7 @@ namespace foxzt {
     }
 
     std::string Logger::toYamlString() {
+        std::unique_lock<MutexType> lock(m_mutex);
         YAML::Node node;
         node["name"] = m_name;
         if (m_level != (LogLevel) -1) {
@@ -421,6 +427,7 @@ namespace foxzt {
     }
 
     Logger::ptr LoggerManager::getLogger(const std::string &name) {
+        std::unique_lock<MutexType> lock(m_mutex);
         auto it = m_loggers.find(name);
         if (it != m_loggers.end()) {
             return it->second;
@@ -432,6 +439,7 @@ namespace foxzt {
     }
 
     std::string LoggerManager::toYamlString() {
+        std::unique_lock<MutexType> lock(m_mutex);
         YAML::Node node;
         for (auto &i: m_loggers) {
             node.push_back(YAML::Load(i.second->toYamlString()));

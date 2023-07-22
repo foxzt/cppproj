@@ -18,6 +18,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <functional>
+#include <shared_mutex>
 
 #include "util.h"
 #include "log.h"
@@ -34,11 +35,11 @@ namespace foxzt {
 
         virtual ~ConfigVarBase() = default;
 
-        const std::string &getMName() const {
+        [[nodiscard]] const std::string &getMName() const {
             return m_name;
         }
 
-        const std::string &getMDescription() const {
+        [[nodiscard]] const std::string &getMDescription() const {
             return m_description;
         }
 
@@ -46,7 +47,7 @@ namespace foxzt {
 
         virtual bool fromString(const std::string &val) = 0;
 
-        virtual std::string getTypeName() const = 0;
+        [[nodiscard]] virtual std::string getTypeName() const = 0;
 
     protected:
         /// 配置参数的名称
@@ -314,7 +315,7 @@ namespace foxzt {
                                 ss.str());
                         throw std::logic_error("log config error: logger has a invalid appender which type is null");
                     }
-                    std::string type = a["type"].as<std::string>();
+                    auto type = a["type"].as<std::string>();
                     LogAppenderDefine lad;
                     if (type == "FileLogAppender") {
                         lad.type = 1;
@@ -383,6 +384,7 @@ namespace foxzt {
     class ConfigVar : public ConfigVarBase {
     public:
         using ptr = std::shared_ptr<ConfigVar>;
+        using MutexType = std::shared_mutex;
         using on_change_cb = std::function<void(const T &old_value, const T &new_value)>;
 
         ConfigVar(const std::string &name, T mVal, const std::string &description = "") : ConfigVarBase(name,
@@ -391,6 +393,7 @@ namespace foxzt {
 
         std::string toString() override {
             try {
+                std::shared_lock<MutexType> lock(m_mutex);
                 return ToStr()(m_val);
             } catch (std::exception &e) {
                 FOXZT_ERROR("ConfigVar::toString exception {} convert: {} to string", e.what(), typeid(m_val).name());
@@ -407,12 +410,13 @@ namespace foxzt {
             return false;
         }
 
-        std::string getTypeName() const override {
-            return TypeToName<T>();;
+        [[nodiscard]] std::string getTypeName() const override {
+            return TypeToName<T>();
         }
 
         void setMVal(T mVal) {
             {
+                std::shared_lock<MutexType> lock(m_mutex);
                 if (mVal == m_val) {
                     return;
                 }
@@ -420,29 +424,35 @@ namespace foxzt {
                     i.second(m_val, mVal);
                 }
             }
+            std::unique_lock<MutexType> lock(m_mutex);
             m_val = mVal;
         }
 
-        T getMVal() const {
+        [[nodiscard]] T getMVal() {
+            std::shared_lock<MutexType> lock(m_mutex);
             return m_val;
         }
 
         uint64_t addListener(on_change_cb cb) {
             static uint64_t s_fun_id = 0;
+            std::unique_lock<MutexType> lock(m_mutex);
             ++s_fun_id;
             m_cbs[s_fun_id] = cb;
             return s_fun_id;
         }
 
         void delListener(uint64_t key) {
+            std::unique_lock<MutexType> lock(m_mutex);
             m_cbs.erase(key);
         }
 
         void clearListener() {
+            std::unique_lock<MutexType> lock(m_mutex);
             m_cbs.clear();
         }
 
         on_change_cb getListener(uint64_t key) {
+            std::shared_lock<MutexType> lock(m_mutex);
             auto it = m_cbs.find(key);
             return it == m_cbs.end() ? nullptr : it->second;
         }
@@ -450,15 +460,18 @@ namespace foxzt {
     private:
         T m_val;
         std::map<uint64_t, on_change_cb> m_cbs;
+        MutexType m_mutex;
     };
 
     class Config {
     public:
         using ConfigVarMap = std::map<std::string, ConfigVarBase::ptr>;
+        using MutexType = std::shared_mutex;
 
         template<class T>
         static typename ConfigVar<T>::ptr
         Lookup(const std::string &name, const T &default_value, const std::string &description = "") {
+            std::unique_lock<MutexType> lock(GetMutex());
             auto it = GetDatas().find(name);
             if (it != GetDatas().end()) {
                 auto tmp = std::dynamic_pointer_cast<ConfigVar<T> >(it->second);
@@ -485,6 +498,7 @@ namespace foxzt {
         template<class T>
         static typename ConfigVar<T>::ptr
         Lookup(const std::string &name) {
+            std::shared_lock<MutexType> lock(GetMutex());
             auto it = GetDatas().find(name);
             if (it == GetDatas().end()) {
                 return nullptr;
@@ -498,6 +512,7 @@ namespace foxzt {
 
     private:
         static ConfigVarMap &GetDatas();
+        static MutexType& GetMutex();
     };
 
     extern foxzt::ConfigVar<std::set<foxzt::LogDefine>>::ptr g_log_defines;
