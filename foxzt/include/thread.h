@@ -8,7 +8,7 @@
 #include <functional>
 #include <utility>
 #include <thread>
-#include <shared_ptr>
+#include <memory>
 
 #include "util.h"
 #include "noncopyable.h"
