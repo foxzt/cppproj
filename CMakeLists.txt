@@ -12,6 +12,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 #添加项目搜索头文件的位置
 include_directories(.)
+link_directories(/usr/local/lib)
 
 #设置可执行文件与库文件输出的位置
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -47,5 +48,6 @@ link_libraries(${LIB})
 add_executable(test_config tests/test_config.cpp)
 
 add_executable(mytest tests/mytest.cpp)
+target_link_libraries(mytest boost_context)
 
 add_executable(test_thread tests/test_thread.cpp)
