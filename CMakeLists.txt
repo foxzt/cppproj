@@ -6,6 +6,8 @@ project(cppproj)
 
 # 设置 C++ 标准为 C++17
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -g")
+
 
 #设置 CMake 构建过程中生成详细输出
 #set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -26,7 +28,7 @@ set(LIB_SRC
         foxzt/thread.cpp
         foxzt/semaphore.cpp
         foxzt/mutex.cpp
-        )
+        foxzt/fiber.cpp foxzt/macro.cpp)
 
 #设置需要链接的库
 set(LIB
@@ -51,3 +53,5 @@ add_executable(mytest tests/mytest.cpp)
 target_link_libraries(mytest boost_context)
 
 add_executable(test_thread tests/test_thread.cpp)
+
+add_executable(test_util tests/test_util.cpp)
